@@ -125,8 +125,7 @@ def get_command_from_deployment_parameters(parameters):
     deployment_properties = deployment_resources["properties"]
     deployment_containers = deployment_properties["containers"]
 
-    command = deployment_containers[0]["properties"]["command"]
-    return command
+    return deployment_containers[0]["properties"]["command"]
 
 
 @pytest.fixture()

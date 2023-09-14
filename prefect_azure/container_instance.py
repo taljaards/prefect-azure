@@ -357,22 +357,19 @@ class AzureContainerInstanceJob(Infrastructure):
                 self._wait_for_task_container_start, creation_status_poller
             )
 
-            # If creation succeeded, group provisioning state should be 'Succeeded'
-            # and the group should have a single container
-            if self._provisioning_succeeded(created_container_group):
-                self.logger.info(f"{self._log_prefix}: Running command...")
-                if task_status:
-                    task_status.started(value=created_container_group.name)
-                status_code = await run_sync_in_worker_thread(
-                    self._watch_task_and_get_exit_code,
-                    aci_client,
-                    created_container_group,
-                    run_start_time,
-                )
-                self.logger.info(f"{self._log_prefix}: Completed command run.")
-            else:
+            if not self._provisioning_succeeded(created_container_group):
                 raise RuntimeError(f"{self._log_prefix}: Container creation failed.")
 
+            self.logger.info(f"{self._log_prefix}: Running command...")
+            if task_status:
+                task_status.started(value=created_container_group.name)
+            status_code = await run_sync_in_worker_thread(
+                self._watch_task_and_get_exit_code,
+                aci_client,
+                created_container_group,
+                run_start_time,
+            )
+            self.logger.info(f"{self._log_prefix}: Completed command run.")
         finally:
             if created_container_group:
                 await self._wait_for_container_group_deletion(
@@ -482,7 +479,7 @@ class AzureContainerInstanceJob(Infrastructure):
             random_suffix = "".join(
                 random.choices(string.ascii_lowercase + string.digits, k=10)
             )
-            container_name = slugified_name + "-" + random_suffix
+            container_name = f"{slugified_name}-{random_suffix}"
         else:
             container_name = str(uuid.uuid4())
 

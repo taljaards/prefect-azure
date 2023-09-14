@@ -372,13 +372,12 @@ class AzureContainerJobConfiguration(BaseJobConfiguration):
         """
         env = {**self._base_environment(), **self.env}
 
-        azure_env = [
+        return [
             {"name": key, "secureValue": value}
             if key in ENV_SECRETS
             else {"name": key, "value": value}
             for key, value in env.items()
         ]
-        return azure_env
 
 
 class AzureContainerVariables(BaseVariables):
@@ -587,23 +586,22 @@ class AzureContainerWorker(BaseWorker):
             # cancel the flow run if needed.
             identifier = f"{flow_run.id}:{container_group_name}"
 
-            if self._provisioning_succeeded(created_container_group):
-                self._logger.info(f"{self._log_prefix}: Running command...")
-                if task_status is not None:
-                    task_status.started(value=identifier)
-
-                status_code = await run_sync_in_worker_thread(
-                    self._watch_task_and_get_exit_code,
-                    aci_client,
-                    configuration,
-                    created_container_group,
-                    run_start_time,
-                )
-
-                self._logger.info(f"{self._log_prefix}: Completed command run.")
-
-            else:
+            if not self._provisioning_succeeded(created_container_group):
                 raise RuntimeError(f"{self._log_prefix}: Container creation failed.")
+
+            self._logger.info(f"{self._log_prefix}: Running command...")
+            if task_status is not None:
+                task_status.started(value=identifier)
+
+            status_code = await run_sync_in_worker_thread(
+                self._watch_task_and_get_exit_code,
+                aci_client,
+                configuration,
+                created_container_group,
+                run_start_time,
+            )
+
+            self._logger.info(f"{self._log_prefix}: Completed command run.")
 
         finally:
             await self._wait_for_container_group_deletion(
@@ -746,15 +744,13 @@ class AzureContainerWorker(BaseWorker):
             parameters=deployment,
         )
 
-        created_container_group = await run_sync_in_worker_thread(
+        return await run_sync_in_worker_thread(
             self._wait_for_task_container_start,
             aci_client,
             configuration,
             container_group_name,
             creation_status_poller,
         )
-
-        return created_container_group
 
     def _watch_task_and_get_exit_code(
         self,

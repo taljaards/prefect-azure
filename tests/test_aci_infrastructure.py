@@ -85,10 +85,9 @@ def aci_credentials():
     client_secret = "testclientsecret"
     tenant_id = "testtenandid"
 
-    credentials = AzureContainerInstanceCredentials(
+    return AzureContainerInstanceCredentials(
         client_id=client_id, client_secret=client_secret, tenant_id=tenant_id
     )
-    return credentials
 
 
 @pytest.fixture()
@@ -97,7 +96,7 @@ def container_instance_block(aci_credentials):
     Returns a basic initialized ACI infrastructure block suitable for use
     in a variety of tests.
     """
-    container_instance_block = AzureContainerInstanceJob(
+    return AzureContainerInstanceJob(
         command=["test"],
         aci_credentials=aci_credentials,
         resource_group_name="testgroup",
@@ -106,8 +105,6 @@ def container_instance_block(aci_credentials):
         task_watch_poll_interval=0.05,
         task_start_timeout_seconds=0.10,
     )
-
-    return container_instance_block
 
 
 @pytest.fixture()
@@ -529,7 +526,7 @@ def test_preview(aci_credentials):
 
     preview = json.loads(block.preview())
 
-    for (k, v) in block_args.items():
+    for k in block_args:
         if k == "env":
             for (k2, v2) in block_args["env"].items():
                 assert preview[k][k2] == block_args["env"][k2]

@@ -52,8 +52,7 @@ def ml_list_datastores(ml_credentials: "AzureMlCredentials") -> Dict:
     logger.info("Listing datastores")
 
     workspace = ml_credentials.get_workspace()
-    results = workspace.datastores
-    return results
+    return workspace.datastores
 
 
 async def _get_datastore(
@@ -69,8 +68,7 @@ async def _get_datastore(
     else:
         partial_get = partial(Datastore.get, workspace, datastore_name=datastore_name)
 
-    result = await to_thread.run_sync(partial_get)
-    return result
+    return await to_thread.run_sync(partial_get)
 
 
 @task
@@ -109,8 +107,7 @@ async def ml_get_datastore(
     logger = get_run_logger()
     logger.info("Getting datastore %s", datastore_name)
 
-    result = await _get_datastore(ml_credentials, datastore_name)
-    return result
+    return await _get_datastore(ml_credentials, datastore_name)
 
 
 @task
@@ -198,8 +195,7 @@ async def ml_upload_datastore(
             show_progress=False,
         )
 
-    result = await to_thread.run_sync(partial_upload)
-    return result
+    return await to_thread.run_sync(partial_upload)
 
 
 @task

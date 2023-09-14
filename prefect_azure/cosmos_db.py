@@ -89,8 +89,7 @@ async def cosmos_db_query_items(
         partition_key=partition_key,
         **kwargs
     )
-    results = await to_thread.run_sync(partial_query_items)
-    return results
+    return await to_thread.run_sync(partial_query_items)
 
 
 @task
@@ -159,8 +158,7 @@ async def cosmos_db_read_item(
 
     container_client = cosmos_db_credentials.get_container_client(container, database)
     read_item = partial(container_client.read_item, item, partition_key, **kwargs)
-    result = await to_thread.run_sync(read_item)
-    return result
+    return await to_thread.run_sync(read_item)
 
 
 @task
@@ -233,5 +231,4 @@ async def cosmos_db_create_item(
 
     container_client = cosmos_db_credentials.get_container_client(container, database)
     create_item = partial(container_client.create_item, body, **kwargs)
-    result = await to_thread.run_sync(create_item)
-    return result
+    return await to_thread.run_sync(create_item)

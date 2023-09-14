@@ -109,10 +109,8 @@ class TestPush:
         )
 
         assert all(
-            [
-                open(call[1][1].name).read() == "Sample text"
-                for call in upload_blob_mock.mock_calls
-            ]
+            open(call[1][1].name).read() == "Sample text"
+            for call in upload_blob_mock.mock_calls
         )
 
     @pytest.mark.usefixtures("mock_azure_blob_storage")
@@ -164,10 +162,8 @@ class TestPush:
         )
 
         assert all(
-            [
-                open(call[1][1].name).read() == "Sample text"
-                for call in upload_blob_mock.mock_calls
-            ]
+            open(call[1][1].name).read() == "Sample text"
+            for call in upload_blob_mock.mock_calls
         )
 
     @pytest.mark.usefixtures("mock_azure_blob_storage")
@@ -235,10 +231,8 @@ class TestPush:
         )
 
         assert all(
-            [
-                open(call[1][1].name).read() == "Sample text"
-                for call in upload_blob_mock.mock_calls
-            ]
+            open(call[1][1].name).read() == "Sample text"
+            for call in upload_blob_mock.mock_calls
         )
 
     @pytest.mark.usefixtures("mock_azure_blob_storage")

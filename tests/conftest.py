@@ -169,7 +169,7 @@ def account_url(monkeypatch):
 
 
 class CosmosClientMock(MagicMock):
-    def from_connection_string(connection_string):
+    def from_connection_string(self):
         return CosmosClientMock()
 
     def get_client(self):

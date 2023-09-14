@@ -207,10 +207,9 @@ class AzureBlobStorageCredentials(Block):
                 blob_name=blob,
             )
 
-        blob_client = BlobClient.from_connection_string(
+        return BlobClient.from_connection_string(
             self.connection_string.get_secret_value(), container, blob
         )
-        return blob_client
 
     @_raise_help_msg("blob_storage")
     def get_container_client(self, container) -> "ContainerClient":
@@ -251,10 +250,9 @@ class AzureBlobStorageCredentials(Block):
                 credential=ADefaultAzureCredential(),
             )
 
-        container_client = ContainerClient.from_connection_string(
+        return ContainerClient.from_connection_string(
             self.connection_string.get_secret_value(), container
         )
-        return container_client
 
 
 class AzureCosmosDbCredentials(Block):
@@ -338,8 +336,7 @@ class AzureCosmosDbCredentials(Block):
             ```
         """
         cosmos_client = self.get_client()
-        database_client = cosmos_client.get_database_client(database=database)
-        return database_client
+        return cosmos_client.get_database_client(database=database)
 
     def get_container_client(self, container: str, database: str) -> "ContainerProxy":
         """
@@ -369,8 +366,7 @@ class AzureCosmosDbCredentials(Block):
             ```
         """
         database_client = self.get_database_client(database)
-        container_client = database_client.get_container_client(container=container)
-        return container_client
+        return database_client.get_container_client(container=container)
 
 
 class AzureMlCredentials(Block):
@@ -450,14 +446,12 @@ class AzureMlCredentials(Block):
             service_principal_password=service_principal_password,
         )
 
-        workspace = Workspace(
+        return Workspace(
             subscription_id=self.subscription_id,
             resource_group=self.resource_group,
             workspace_name=self.workspace_name,
             auth=service_principal_authentication,
         )
-
-        return workspace
 
 
 class AzureContainerInstanceCredentials(Block):
